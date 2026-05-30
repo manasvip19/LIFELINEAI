@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+LifeLine AI Emergency Command Center
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+</head>
+
+<body>
+
+<div class="container py-4">
+
+<!-- NAVIGATION MENU BAR -->
+
+<nav class="navbar navbar-dark bg-dark mb-4" style="border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+
+    <div class="container-fluid">
+
+        <span class="navbar-brand mb-0 h1">🚑 LifeLine AI Emergency Command Center</span>
+
+        <div class="d-flex gap-3">
+
+            <a href="/" class="btn btn-outline-light btn-sm">← Back Home</a>
+
+            <button class="btn btn-outline-light btn-sm" onclick="location.reload()">🔄 Refresh</button>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<div class="container py-4">
+
+<!-- NATIONAL BANNER -->
+
+<div class="india-banner">
+
+🇮🇳 National Emergency Intelligence Network
+
+</div>
+
+<!-- ALERT -->
+
+<div class="alert-emergency pulse mt-4">
+
+<h1>
+
+🚨 {{priority}} EMERGENCY
+
+</h1>
+
+<h3>
+
+{{sos_id}}
+
+</h3>
+
+<p>
+
+Emergency Response Activated
+
+</p>
+
+</div>
+
+<!-- LOCATION -->
+
+<div class="glass mt-4">
+
+<h4>
+
+📍 Emergency Location
+
+</h4>
+
+<p>
+
+{{location_name}}
+
+</p>
+
+</div>
+
+<!-- METRICS -->
+
+<div class="row g-4 mt-2">
+
+<div class="col-md-3">
+
+<div class="metric-card">
+
+<h5>
+
+🔥 Severity
+
+</h5>
+
+<h2>
+
+{{severity}}%
+
+</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="metric-card">
+
+<h5>
+
+📊 Readiness
+
+</h5>
+
+<h2>
+
+{{readiness_score}}%
+
+</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="metric-card">
+
+<h5>
+
+🌡 Temperature
+
+</h5>
+
+<h2>
+
+{{weather.temperature}}°C
+
+</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="metric-card">
+
+<h5>
+
+⚡ Priority
+
+</h5>
+
+<h2>
+
+{{priority}}
+
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SEVERITY ANALYSIS -->
+
+<div class="glass mt-4">
+
+<h3>
+
+🔥 Emergency Severity Analysis
+
+</h3>
+
+<div class="text-center mt-4">
+
+<div class="severity-circle">
+
+{{severity}}%
+
+</div>
+
+</div>
+
+</div>
+
+<!-- HOSPITAL + AMBULANCE -->
+
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="glass">
+
+<h3>
+
+🏥 Hospital Intelligence
+
+</h3>
+
+<hr>
+
+<h4>
+
+{{hospital.name}}
+
+</h4>
+
+<p>
+
+🛏 Beds Available:
+{{hospital.beds}}
+
+</p>
+
+<p>
+
+⭐ Score:
+{{hospital.score}}
+
+</p>
+
+<p>
+
+📡 Status:
+Ready
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="glass">
+
+<h3>
+
+🚑 Ambulance Intelligence
+
+</h3>
+
+<hr>
+
+<h4>
+
+{% if ambulance %}{{ambulance.id}}{% else %}AMB-101{% endif %}
+
+</h4>
+
+<p>
+
+⏱ ETA:
+{% if ambulance %}{{ambulance.eta}}{% else %}5{% endif %} mins
+
+</p>
+
+<p>
+
+📡 Status:
+{% if ambulance %}{{ambulance.status}}{% else %}Available{% endif %}
+
+</p>
+
+<p>
+
+🛰 GPS Tracking Active
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- WEATHER + ROUTE -->
+
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="glass">
+
+<h3>
+
+🌦 Weather Intelligence
+
+</h3>
+
+<hr>
+
+<p>
+
+Condition:
+{{weather.condition}}
+
+</p>
+
+<p>
+
+Temperature:
+{{weather.temperature}} °C
+
+</p>
+
+<p>
+
+Humidity:
+{{weather.humidity}} %
+
+</p>
+
+<p>
+
+Risk:
+{{weather.risk}}
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="glass">
+
+<h3>
+
+🛣 Route Intelligence
+
+</h3>
+
+<hr>
+
+<p>
+
+Distance:
+{{route.distance}} km
+
+</p>
+
+<p>
+
+ETA:
+{{route.duration}} mins
+
+</p>
+
+<p>
+
+Fastest Route Calculated
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+<!-- AI COPILOT -->
+
+<div class="glass mt-4">
+
+<h3>
+
+🤖 AI Emergency Copilot
+
+</h3>
+
+<hr>
+
+<div class="copilot">
+
+<ul>
+
+{% for item in guidance %}
+
+<li>
+
+{{item}}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+</div>
+
+<!-- TIMELINE -->
+
+<div class="glass mt-4">
+
+<h3>
+
+📊 Emergency Timeline
+
+</h3>
+
+<hr>
+
+<ul class="list-group">
+
+{% for item in timeline %}
+
+<li class="list-group-item bg-dark text-white">
+
+{{item}}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+<!-- HOSPITAL TABLE -->
+
+<div class="glass mt-4">
+
+<h3>
+
+🏥 Nearby Hospitals
+
+</h3>
+
+<hr>
+
+<div class="table-responsive">
+
+<table
+class="table table-dark table-hover">
+
+<thead>
+
+<tr>
+
+<th>Hospital</th>
+
+<th>Beds</th>
+
+<th>Score</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for h in top_hospitals %}
+
+<tr>
+
+<td>
+
+{{h.name}}
+
+</td>
+
+<td>
+
+{{h.beds}}
+
+</td>
+
+<td>
+
+{{h.score}} / 100
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- AMBULANCE TABLE -->
+
+<div class="glass mt-4">
+
+<h3>
+
+🚑 Nearby Ambulances
+
+</h3>
+
+<hr>
+
+<div class="table-responsive">
+
+<table
+class="table table-dark table-hover">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>ETA</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for a in ambulances %}
+
+<tr>
+
+<td>
+
+{{a.id}}
+
+</td>
+
+<td>
+
+{{a.eta}} mins
+
+</td>
+
+<td>
+
+{{a.status}}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- NATIONAL DASHBOARD -->
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+
+<div class="metric-card">
+
+<h2>
+
+{{hospitals_connected}}
+
+</h2>
+
+<p>
+
+Hospitals Connected
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="metric-card">
+
+<h2>
+
+{{ambulances_connected}}
+
+</h2>
+
+<p>
+
+Emergency Vehicles
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="metric-card">
+
+<h2>
+
+{{states_covered}}
+
+</h2>
+
+<p>
+
+States Covered
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- MAP -->
+
+<div class="glass mt-4">
+
+<h3>
+
+🗺 Emergency Command Map
+
+</h3>
+
+<hr>
+
+<div id="map"></div>
+
+</div>
+<!-- FLOATING AI CHATBOT -->
+
+<div id="chatbot" class="chatbot-container">
+
+    <div id="chat-header" class="chatbot-header">
+
+        <div class="chatbot-title">🤖 LifeLine AI Assistant</div>
+
+        <div class="chatbot-controls">
+
+            <button id="minimizeBtn" onclick="toggleMinimize()" class="chat-btn" title="Minimize">−</button>
+
+            <button id="closeBtn" onclick="toggleChatbot()" class="chat-btn" title="Close">✕</button>
+
+        </div>
+
+    </div>
+
+    <div id="chat-body" class="chatbot-body">
+
+        <div class="bot-message">
+
+            🚑 Hello! I'm LifeLine AI Assistant. I'm here to provide emergency guidance and answer your questions about your current emergency situation.
+
+        </div>
+
+    </div>
+
+    <div id="chat-input" class="chatbot-input">
+
+        <input
+        type="text"
+        id="userInput"
+        placeholder="Ask me anything about this emergency...">
+
+        <button onclick="sendMessage()" class="send-btn">Send</button>
+
+    </div>
+
+</div>
+
+<button id="chatbotToggle" onclick="toggleChatbot()" class="chatbot-toggle" style="display:none;">💬</button>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+/* ==========================
+   MAP INITIALIZATION
+========================== */
+
+var map = L.map('map').setView(
+[
+{{user_lat}},
+{{user_lon}}
+],
+13
+);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+maxZoom:19
+}
+).addTo(map);
+
+/* ==========================
+   CUSTOM ICONS
+========================== */
+
+var userIcon = L.icon({
+
+iconUrl:
+'https://cdn-icons-png.flaticon.com/512/149/149071.png',
+
+iconSize:[40,40]
+
+});
+
+var hospitalIcon = L.icon({
+
+iconUrl:
+'https://cdn-icons-png.flaticon.com/512/1484/1484848.png',
+
+iconSize:[40,40]
+
+});
+
+var ambulanceIcon = L.icon({
+
+iconUrl:
+'https://cdn-icons-png.flaticon.com/512/2966/2966486.png',
+
+iconSize:[40,40]
+
+});
+
+/* ==========================
+   USER LOCATION
+========================== */
+
+L.marker(
+[
+{{user_lat}},
+{{user_lon}}
+],
+{
+icon:userIcon
+}
+)
+.addTo(map)
+.bindPopup(
+"📍 Patient Location"
+);
+
+/* ==========================
+   HOSPITALS
+========================== */
+
+{% for h in top_hospitals %}
+
+L.marker(
+[
+{{h.lat}},
+{{h.lon}}
+],
+{
+icon:hospitalIcon
+}
+)
+.addTo(map)
+.bindPopup(
+`
+🏥 <b>{{h.name}}</b>
+
+<br>
+
+🛏 Beds:
+{{h.beds}}
+
+<br>
+
+⭐ Score:
+{{h.score}} / 100
+`
+);
+
+{% endfor %}
+
+/* ==========================
+   AMBULANCES
+========================== */
+
+{% for a in ambulances %}
+
+L.marker(
+[
+{{a.lat}},
+{{a.lon}}
+],
+{
+icon:ambulanceIcon
+}
+)
+.addTo(map)
+.bindPopup(
+`
+🚑 <b>{{a.id}}</b>
+
+<br>
+
+ETA:
+{{a.eta}} mins
+
+<br>
+
+Status:
+{{a.status}}
+`
+);
+
+{% endfor %}
+
+/* ==========================
+   INTELLIGENT RAG CHATBOT
+========================== */
+
+const emergencyContext = {{
+    {
+        'emergency': (emergency if emergency is defined else ''),
+        'priority': (priority if priority is defined else ''),
+        'severity': (severity if severity is defined else 0),
+        'location': (location_name if location_name is defined else ''),
+        'hospital': {
+            'name': (hospital.name if hospital is defined and hospital.name is defined else ''),
+            'beds': (hospital.beds if hospital is defined and hospital.beds is defined else 0),
+            'score': (hospital.score if hospital is defined and hospital.score is defined else 0)
+        },
+        'ambulance': {
+            'id': (ambulance.id if ambulance is defined and ambulance.id is defined else ''),
+            'eta': (ambulance.eta if ambulance is defined and ambulance.eta is defined else 0),
+            'status': (ambulance.status if ambulance is defined and ambulance.status is defined else '')
+        },
+        'route': {
+            'distance': (route.distance if route is defined and route.distance is defined else 0),
+            'duration': (route.duration if route is defined and route.duration is defined else 0)
+        },
+        'weather': {
+            'condition': (weather.condition if weather is defined and weather.condition is defined else ''),
+            'temperature': (weather.temperature if weather is defined and weather.temperature is defined else ''),
+            'humidity': (weather.humidity if weather is defined and weather.humidity is defined else ''),
+            'risk': (weather.risk if weather is defined and weather.risk is defined else '')
+        }
+    } | tojson
+}};
+
+{% raw %}
+const knowledgeBase = {
+    "Heart Attack": {
+        keywords: ["heart", "chest", "pain", "attack", "pressure", "breathing"],
+        guidance: [
+            "✓ Sit or lie down immediately in a comfortable position",
+            "✓ Chew aspirin if available (not allergic)",
+            "✓ Keep airway clear, loosen tight clothing",
+            "✓ Monitor breathing and pulse",
+            "✓ Stay calm and wait for ambulance",
+            "✓ Do NOT exert yourself"
+        ],
+        questions: {
+            "what should i do": "For a heart attack: Sit down immediately, loosen clothing, monitor breathing, and wait for the ambulance.",
+            "am i going to be okay": "With prompt emergency care, survival rates are high. Stay calm and focus on your breathing.",
+            "how long": `The ambulance ({{ambulance.id}}) will arrive in approximately {{ambulance.eta}} minutes. The hospital is {{route.distance}} km away.`,
+            "what hospital": "You've been assigned to {{hospital.name}}, which has a readiness score and is equipped to handle your emergency.",
+            "should i move": "Do NOT move unnecessarily. Stay where you are and wait for medical professionals."
+        }
+    },
+    "Stroke": {
+        keywords: ["stroke", "weakness", "slur", "speech", "face", "arm", "time"],
+        guidance: [
+            "✓ Note the exact time symptoms started",
+            "✓ Keep patient calm and seated",
+            "✓ Do NOT give food or water",
+            "✓ Monitor speech and facial symmetry",
+            "✓ Keep patient warm",
+            "✓ Reassure patient help is coming"
+        ],
+        questions: {
+            "what should i do": "For stroke (FAST): Face drooping, Arm weakness, Speech difficulty, Time matters. Call emergency immediately.",
+            "am i having a stroke": "Common signs: facial drooping, arm weakness, speech difficulty. Stay calm and wait for medical professionals.",
+            "how long": `Emergency response ETA: {{ambulance.eta}} minutes. Hospital ({{hospital.name}}) is {{route.distance}} km away.`,
+            "should i drink": "NO. Do not give food or water to stroke patients.",
+            "is this serious": "Stroke is a medical emergency. Time is critical. Professional help is on the way."
+        }
+    },
+    "Accident": {
+        keywords: ["accident", "injury", "bleeding", "fracture", "pain", "broken"],
+        guidance: [
+            "✓ Check for bleeding and apply pressure with clean cloth",
+            "✓ Immobilize injured limbs",
+            "✓ Do NOT move patient if spinal injury suspected",
+            "✓ Keep patient warm and calm",
+            "✓ Monitor consciousness level",
+            "✓ Reassure help is on the way"
+        ],
+        questions: {
+            "what should i do": "Control any bleeding with pressure, immobilize injuries, and keep patient still.",
+            "should i move": "Only if in immediate danger. Avoid moving if possible, especially neck/spine.",
+            "how long": `Ambulance ({{ambulance.id}}) ETA: {{ambulance.eta}} minutes. Nearest facility: {{hospital.name}}`,
+            "is it serious": "Emergency response is active. Medical professionals will assess the situation.",
+            "what about bleeding": "Apply direct pressure with clean cloth. Elevate injured area if possible."
+        }
+    },
+    "Burn Injury": {
+        keywords: ["burn", "fire", "heat", "scalding", "chemical"],
+        guidance: [
+            "✓ Cool the burn with cool (not cold) water for 10-20 minutes",
+            "✓ Remove jewelry and tight clothing",
+            "✓ Cover burn with clean, dry cloth",
+            "✓ Do NOT apply ice directly",
+            "✓ Do NOT apply ointments or creams",
+            "✓ Elevate burned area if possible"
+        ],
+        questions: {
+            "what should i do": "Cool the burn with cool water (not ice) for 10-20 minutes, cover with clean cloth.",
+            "should i use ice": "NO. Use cool water only, not ice, as ice can damage tissue further.",
+            "should i apply cream": "NO creams or ointments. Just clean cloth until medical help arrives.",
+            "how long": `Ambulance ETA: {{ambulance.eta}} minutes. Professional treatment at {{hospital.name}}.`,
+            "is it serious": "Burn injuries need professional medical care. Help is on the way."
+        }
+    },
+    "General Emergency": {
+        keywords: ["help", "emergency", "hospital", "ambulance", "doctor"],
+        guidance: [
+            "✓ Stay calm and breathe slowly",
+            "✓ Remain where you are",
+            "✓ Keep patient conscious and alert",
+            "✓ Monitor vital signs",
+            "✓ Wait for professional medical help",
+            "✓ Provide information to emergency responders"
+        ],
+        questions: {
+            "what should i do": "Stay calm, remain in a safe location, and wait for the ambulance.",
+            "how long": `Ambulance ({{ambulance.id}}) will arrive in {{ambulance.eta}} minutes.`,
+            "where am i going": "You'll be transported to {{hospital.name}} for professional medical care.",
+            "will i be okay": "Emergency response is active. Medical professionals will help.",
+            "what happens next": "The ambulance will arrive soon. Follow their instructions and stay calm."
+        }
+    }
+};
+{% endraw %}
+
+let isChatMinimized = false;
+
+function toggleMinimize() {
+    isChatMinimized = !isChatMinimized;
+    const body = document.getElementById("chat-body");
+    const input = document.getElementById("chat-input");
+    const btn = document.getElementById("minimizeBtn");
+    
+    if (isChatMinimized) {
+        body.style.display = "none";
+        input.style.display = "none";
+        btn.textContent = "+";
+    } else {
+        body.style.display = "block";
+        input.style.display = "flex";
+        btn.textContent = "−";
+    }
+}
+
+function toggleChatbot() {
+    const chatbot = document.getElementById("chatbot");
+    const toggle = document.getElementById("chatbotToggle");
+    
+    if (chatbot.style.display === "none") {
+        chatbot.style.display = "flex";
+        toggle.style.display = "none";
+    } else {
+        chatbot.style.display = "none";
+        toggle.style.display = "block";
+    }
+}
+
+function generateAIResponse(userMessage) {
+    const lower = userMessage.toLowerCase();
+    const emergency = emergencyContext.emergency;
+    const context = knowledgeBase[emergency] || knowledgeBase["General Emergency"];
+    
+    // Check for exact question matches
+    for (let question in context.questions) {
+        if (lower.includes(question)) {
+            let answer = context.questions[question];
+            const tokenMap = {
+                "{{ambulance.id}}": (emergencyContext.ambulance.id || ''),
+                "{{ambulance.eta}}": (emergencyContext.ambulance.eta || ''),
+                "{{hospital.name}}": (emergencyContext.hospital.name || ''),
+                "{{route.distance}}": (emergencyContext.route.distance || ''),
+                "{{route.duration}}": (emergencyContext.route.duration || ''),
+                "{{priority}}": (emergencyContext.priority || ''),
+                "{{location_name}}": (emergencyContext.location || ''),
+                "{{hospital.beds}}": (emergencyContext.hospital.beds || ''),
+                "{{hospital.score}}": (emergencyContext.hospital.score || ''),
+                "{{weather.condition}}": (emergencyContext.weather.condition || ''),
+                "{{weather.risk}}": (emergencyContext.weather.risk || ''),
+                "{{weather.risk | default('Low')}}": (emergencyContext.weather.risk || 'Low')
+            };
+
+            for (const [token, val] of Object.entries(tokenMap)) {
+                answer = answer.split(token).join(String(val));
+            }
+
+            return answer;
+        }
+    }
+     /* BREATHING ISSUES */
+
+if(
+lower.includes("can't breathe") ||
+lower.includes("cannot breathe") ||
+lower.includes("breathing") ||
+lower.includes("shortness of breath")
+){
+
+return `
+🫁 Breathing Emergency
+
+✓ Sit upright immediately
+
+✓ Loosen tight clothing
+
+✓ Stay calm
+
+✓ Take slow breaths
+
+✓ Ambulance ETA:
+${emergencyContext.ambulance.eta} mins
+
+⚠ If breathing stops, CPR may be needed.
+`;
+}
+
+/* BLEEDING */
+
+if(
+lower.includes("bleeding") ||
+lower.includes("blood")
+){
+
+return `
+🩸 Severe Bleeding
+
+✓ Apply direct pressure
+
+✓ Use clean cloth
+
+✓ Elevate injured area
+
+✓ Do not remove soaked cloth
+
+✓ Emergency team notified
+
+🚑 ETA:
+${emergencyContext.ambulance.eta} mins
+`;
+}
+
+/* UNCONSCIOUS */
+
+if(
+lower.includes("unconscious") ||
+lower.includes("fainted") ||
+lower.includes("not responding")
+){
+
+return `
+⚠ Unconscious Person
+
+✓ Check breathing
+
+✓ Place in recovery position
+
+✓ Keep airway open
+
+✓ Do NOT give food or water
+
+🚑 Ambulance dispatched
+`;
+}
+
+/* FEVER */
+
+if(
+lower.includes("fever") ||
+lower.includes("temperature")
+){
+
+return `
+🌡 Fever Guidance
+
+✓ Drink fluids
+
+✓ Rest
+
+✓ Monitor temperature
+
+✓ Avoid dehydration
+
+Current weather:
+${emergencyContext.weather.temperature}°C
+`;
+}
+
+/* SEIZURE */
+
+if(
+lower.includes("seizure") ||
+lower.includes("fits") ||
+lower.includes("convulsion")
+){
+
+return `
+⚡ Seizure Detected
+
+✓ Move dangerous objects away
+
+✓ Protect head
+
+✓ Do NOT hold patient down
+
+✓ Do NOT place objects in mouth
+
+🚑 Medical team alerted
+`;
+}
+
+/* BURNS */
+
+if(
+lower.includes("burn") ||
+lower.includes("fire")
+){
+
+return `
+🔥 Burn Injury
+
+✓ Cool with water
+
+✓ No ice
+
+✓ Cover with clean cloth
+
+✓ Remove jewelry carefully
+
+🏥 Hospital Ready:
+${emergencyContext.hospital.name}
+`;
+}
+
+/* FRACTURE */
+
+if(
+lower.includes("broken") ||
+lower.includes("fracture") ||
+lower.includes("bone")
+){
+
+return `
+🦴 Possible Fracture
+
+✓ Immobilize injured area
+
+✓ Avoid movement
+
+✓ Apply cold pack
+
+✓ Wait for ambulance
+
+🚑 ETA:
+${emergencyContext.ambulance.eta} mins
+`;
+}
+
+/* POISONING */
+
+if(
+lower.includes("poison") ||
+lower.includes("chemical") ||
+lower.includes("swallowed")
+){
+
+return `
+☠ Poisoning Alert
+
+✓ Do NOT induce vomiting
+
+✓ Identify substance
+
+✓ Keep patient calm
+
+✓ Emergency response activated
+
+🚑 Help arriving
+`;
+}
+
+/* PREGNANCY */
+
+if(
+lower.includes("pregnant") ||
+lower.includes("labour") ||
+lower.includes("delivery")
+){
+
+return `
+🤱 Pregnancy Emergency
+
+✓ Stay calm
+
+✓ Lie comfortably
+
+✓ Monitor contractions
+
+✓ Keep emergency contacts informed
+
+🏥 Nearest hospital ready
+`;
+}
+
+/* CHILD */
+
+if(
+lower.includes("child") ||
+lower.includes("baby")
+){
+
+return `
+👶 Child Emergency
+
+✓ Keep child calm
+
+✓ Monitor breathing
+
+✓ Keep airway clear
+
+✓ Emergency response active
+
+🚑 Ambulance ETA:
+${emergencyContext.ambulance.eta} mins
+`;
+}
+
+/* DIABETES */
+
+if(
+lower.includes("diabetes") ||
+lower.includes("sugar")
+){
+
+return `
+🩺 Diabetes Emergency
+
+✓ Check glucose if possible
+
+✓ If conscious, provide fast sugar
+
+✓ Monitor closely
+
+🚑 Medical help arriving
+`;
+}
+
+/* ANXIETY */
+
+if(
+lower.includes("panic") ||
+lower.includes("anxiety") ||
+lower.includes("scared")
+){
+
+return `
+💙 Stay Calm
+
+✓ Slow deep breaths
+
+✓ Sit comfortably
+
+✓ Focus on breathing
+
+✓ Help is on the way
+
+🚑 ETA:
+${emergencyContext.ambulance.eta} mins
+`;
+}
+if(lower.includes("will i die")){
+
+return `
+❤️ Medical help is already on the way.
+
+Stay calm.
+
+Your ambulance ETA is
+${emergencyContext.ambulance.eta} minutes.
+`;
+}
+
+if(lower.includes("where am i")){
+
+return `
+📍 Current Location
+
+${emergencyContext.location}
+`;
+}
+
+if(lower.includes("which hospital")){
+
+return `
+🏥 Assigned Hospital
+
+${emergencyContext.hospital.name}
+
+Beds Available:
+${emergencyContext.hospital.beds}
+`;
+}
+
+if(lower.includes("ambulance")){
+
+return `
+🚑 Ambulance Details
+
+ID:
+${emergencyContext.ambulance.id}
+
+ETA:
+${emergencyContext.ambulance.eta} mins
+
+Status:
+${emergencyContext.ambulance.status}
+`;
+}
+    // Check keywords
+    for (let keyword of context.keywords) {
+        if (lower.includes(keyword)) {
+            const guidanceItem = context.guidance[Math.floor(Math.random() * context.guidance.length)];
+            return `Based on ${emergency}:\n${guidanceItem}\n\nAmbulance (${emergencyContext.ambulance.id}) arriving in ${emergencyContext.ambulance.eta} minutes.`;
+        }
+    }
+    
+    // General responses based on emergency type
+    if (lower.includes("help") || lower.includes("emergency")) {
+        return `🚨 Emergency Support Active:\n• Priority: ${emergencyContext.priority}\n• Ambulance: ${emergencyContext.ambulance.id} (ETA: ${emergencyContext.ambulance.eta} mins)\n• Hospital: ${emergencyContext.hospital.name}\n• Location: ${emergencyContext.location}\n\nHelp is on the way. Stay calm.`;
+    }
+    
+    if (lower.includes("location") || lower.includes("where")) {
+        return `📍 Current Location: ${emergencyContext.location}\n🏥 Destination: ${emergencyContext.hospital.name}\n📏 Distance: ${emergencyContext.route.distance} km\n⏱ Estimated Travel Time: ${emergencyContext.route.duration} mins`;
+    }
+    
+    if (lower.includes("ambulance") || lower.includes("eta")) {
+        return `🚑 Ambulance Information:\n• ID: ${emergencyContext.ambulance.id}\n• ETA: ${emergencyContext.ambulance.eta} minutes\n• Status: ${emergencyContext.ambulance.status}\n• GPS Tracking: Active`;
+    }
+    
+    if (lower.includes("hospital")) {
+        return `🏥 Hospital Information:\n• Name: ${emergencyContext.hospital.name}\n• Beds Available: ${emergencyContext.hospital.beds}\n• Readiness Score: ${emergencyContext.hospital.score}/100\n• Status: Ready to receive patient`;
+    }
+    
+    if (lower.includes("weather")) {
+        const risk = emergencyContext.weather.risk || 'Low';
+        return `🌦 Weather Conditions:\n• Condition: ${emergencyContext.weather.condition}\n• Impact: May affect ambulance response time\n• Current Risk: ${risk}`;
+    }
+    
+    // Default response
+    return `I'm LifeLine AI Assistant. I can help with:\n• Emergency guidance\n• Ambulance/Hospital status\n• Location information\n• Emergency procedures\n\nWhat would you like to know?`;
+}
+function sendMessage(){
+
+    let input =
+    document.getElementById(
+        "userInput"
+    );
+
+    let text =
+    input.value.trim();
+
+    if(text==="")
+        return;
+
+    document.getElementById(
+        "chat-body"
+    ).innerHTML +=
+    `
+    <div class="user-message">
+        ${text}
+    </div>
+    `;
+
+    input.value="";
+
+    const reply =
+    generateAIResponse(text);
+
+    document.getElementById(
+        "chat-body"
+    ).innerHTML +=
+    `
+    <div class="bot-message">
+        ${reply}
+    </div>
+    `;
+
+    let chat =
+    document.getElementById(
+        "chat-body"
+    );
+
+    chat.scrollTop =
+    chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
